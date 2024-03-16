@@ -1,52 +1,35 @@
-import Link from "next/link";
 import React, { useState, FormEvent } from "react";
 import CustomInput from "../input/customInput";
-import { toast } from "react-toastify";
-import { CreateCollection } from "@/interfaces/collection.interface";
+import { CreateBid } from "@/interfaces/bid.interface";
 
-type CreateCollectionFormProps = {
-  onFormSubmit: (formData: {
-    name: string;
-    descriptions: string;
-    stocks: number;
-    price: number;
-  }) => void;
+type CreateBidFormProps = {
+  onFormSubmit: (formData: { price: number }) => void;
   error?: string;
   isCreate: boolean;
   collectionId?: number;
 };
 
-export interface CreateCollectionFormStates {
-  name: string;
-  descriptions: string;
-  stocks: number;
+export interface CreateBidFormStates {
   price: number;
 }
 
-const CreateCollectionForm: React.FC<CreateCollectionFormProps> = ({
+const CreateBidForm: React.FC<CreateBidFormProps> = ({
   onFormSubmit,
   isCreate,
   error,
-  collectionId,
 }) => {
-  const [state, setState] = useState<CreateCollectionFormStates>({
-    name: "",
-    descriptions: "",
-    stocks: 0,
+  const [state, setState] = useState<CreateBidFormStates>({
     price: 0,
   });
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    const collectionCreate: CreateCollection = {
-      name: state.name,
-      descriptions: state.descriptions,
-      stocks: state.stocks,
+    const bidCreate: CreateBid = {
       price: state.price,
     };
 
-    onFormSubmit(collectionCreate);
+    onFormSubmit(bidCreate);
   };
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -62,38 +45,8 @@ const CreateCollectionForm: React.FC<CreateCollectionFormProps> = ({
       className="w-full flex flex-col justify-between items-center"
     >
       <div className="flex flex-col justify-between items-center h-60 w-1/5">
-        <h3 className="text-2xl">
-          {isCreate ? "Create Collection" : "Update Collection"}
-        </h3>
+        <h3 className="text-2xl">{isCreate ? "Create bid" : "Update bid"}</h3>
         <div className="w-full flex flex-col justify-between items-center">
-          <CustomInput
-            type="text"
-            required={true}
-            name="name"
-            value={state.name}
-            placeholder="Name"
-            onChange={onChangeHandler}
-          />
-
-          <CustomInput
-            type="text"
-            required={true}
-            name="descriptions"
-            value={state.descriptions}
-            placeholder="descriptions"
-            onChange={onChangeHandler}
-          />
-
-          <CustomInput
-            type="number"
-            required={true}
-            name="stocks"
-            minLength={8}
-            value={String(state.stocks)}
-            placeholder="stocks"
-            onChange={onChangeHandler}
-          />
-
           <CustomInput
             required={true}
             minLength={8}
@@ -120,4 +73,4 @@ const CreateCollectionForm: React.FC<CreateCollectionFormProps> = ({
   );
 };
 
-export default CreateCollectionForm;
+export default CreateBidForm;

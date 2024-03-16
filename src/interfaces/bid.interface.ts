@@ -8,7 +8,6 @@ export interface Bid {
 
 export interface CreateBid {
   price: number;
-  status: string;
 }
 
 export interface UpdateBid extends CreateBid {}
