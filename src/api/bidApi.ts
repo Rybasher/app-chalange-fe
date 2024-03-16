@@ -59,6 +59,16 @@ export const bidActionsApi = createApi({
         };
       },
     }),
+    rejectBid: builder.query<void, { bidId: number; collectionId: number }>({
+      query(params) {
+        return {
+          url: `/bid/reject/${params.collectionId}/${params.bidId}`,
+          credentials: "include",
+          keepUnusedDataFor: 2,
+          method: "POST",
+        };
+      },
+    }),
   }),
 });
 
@@ -68,4 +78,5 @@ export const {
   useUpdateBidQuery,
   useDeleteBidQuery,
   useAcceptBidQuery,
+  useRejectBidQuery,
 } = bidActionsApi;
