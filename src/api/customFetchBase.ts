@@ -61,9 +61,7 @@ const customFetchBase: BaseQueryFn<
           extraOptions
         );
         if (refreshResult.data) {
-          if (refreshResult.data.statusCode === 200) {
-            api.dispatch(setTokens(refreshResult.data.detail));
-          }
+          api.dispatch(setTokens(refreshResult.data));
         } else {
           api.dispatch(logoutState());
           window.location.href = "/auth/singin";

@@ -22,16 +22,13 @@ export const collectionActionsApi = createApi({
         };
       },
     }),
-    createCollection: builder.query<Collection, { dto: CreateCollection }>({
-      query(params) {
-        return {
-          url: `/collection`,
-          credentials: "include",
-          keepUnusedDataFor: 2,
-          method: "POST",
-          body: params.dto,
-        };
-      },
+    createCollection: builder.mutation<Collection, CreateCollection>({
+      query: (dto) => ({
+        url: `/collection`,
+        method: "POST",
+        body: dto,
+        credentials: "include",
+      }),
     }),
     updateCollection: builder.query<
       Collection,
@@ -71,7 +68,7 @@ export const collectionActionsApi = createApi({
 
 export const {
   useGetAllCollectionsQuery,
-  useCreateCollectionQuery,
+  useCreateCollectionMutation,
   useUpdateCollectionQuery,
   useDeleteCollectionQuery,
   useGetCollectionByIdQuery,
