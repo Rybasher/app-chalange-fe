@@ -132,7 +132,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onFormSubmit, isSingUp, error }) =>
           ) : (
             <>
               <p>Don`t have am account? <Link className='text-sky-400/100' href='/auth/singup'>SingUp</Link> </p>
-              <p>Forgot password? <Link className='text-sky-400/100' href='/auth/forgot-password'>Reset</Link> </p>
+              <p>Forgot password? <Link className='text-sky-400/100' href='./auth/forgot-password'>Reset</Link> </p>
             </>
           )}
         </div>
