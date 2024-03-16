@@ -1,5 +1,11 @@
 import { Bid } from "./bid.interface";
 
+export interface PaginatedCollections {
+  data: Collection[];
+  total: number;
+  page: number;
+  limit: number;
+}
 export interface Collection {
   id: number;
   name: string;

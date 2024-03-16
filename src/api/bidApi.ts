@@ -17,66 +17,51 @@ export const bidActionsApi = createApi({
         };
       },
     }),
-    createBid: builder.query<Bid, { collectionId: number; dto: CreateBid }>({
-      query(params) {
-        return {
-          url: `/bid/${params.collectionId}`,
-          credentials: "include",
-          keepUnusedDataFor: 2,
-          method: "POST",
-          body: params.dto,
-        };
-      },
+    createBid: builder.mutation<Bid, { collectionId: number; dto: CreateBid }>({
+      query: ({ collectionId, dto }) => ({
+        url: `/bid/${collectionId}`,
+        method: "POST",
+        body: dto,
+        credentials: "include",
+      }),
     }),
-    updateBid: builder.query<Bid, { bidId: number; dto: UpdateBid }>({
-      query(params) {
-        return {
-          url: `/bid/${params.bidId}`,
-          credentials: "include",
-          keepUnusedDataFor: 2,
-          method: "PATCH",
-          body: params.dto,
-        };
-      },
+    updateBid: builder.mutation<Bid, { bidId: number; dto: UpdateBid }>({
+      query: ({ bidId, dto }) => ({
+        url: `/bid/${bidId}`,
+        method: "PATCH",
+        body: dto,
+        credentials: "include",
+      }),
     }),
-    deleteBid: builder.query<void, { bidId: number }>({
-      query(params) {
-        return {
-          url: `/bid/${params.bidId}`,
-          credentials: "include",
-          keepUnusedDataFor: 2,
-          method: "DELETE",
-        };
-      },
+    deleteBid: builder.mutation<void, { bidId: number }>({
+      query: ({ bidId }) => ({
+        url: `/bid/${bidId}`,
+        method: "DELETE",
+        credentials: "include",
+      }),
     }),
-    acceptBid: builder.query<void, { bidId: number; collectionId: number }>({
-      query(params) {
-        return {
-          url: `/bid/accept/${params.collectionId}/${params.bidId}`,
-          credentials: "include",
-          keepUnusedDataFor: 2,
-          method: "POST",
-        };
-      },
+    acceptBid: builder.mutation<void, { bidId: number; collectionId: number }>({
+      query: ({ collectionId, bidId }) => ({
+        url: `/bid/accept/${collectionId}/${bidId}`,
+        method: "POST",
+        credentials: "include",
+      }),
     }),
-    rejectBid: builder.query<void, { bidId: number; collectionId: number }>({
-      query(params) {
-        return {
-          url: `/bid/reject/${params.collectionId}/${params.bidId}`,
-          credentials: "include",
-          keepUnusedDataFor: 2,
-          method: "POST",
-        };
-      },
+    rejectBid: builder.mutation<void, { bidId: number; collectionId: number }>({
+      query: ({ collectionId, bidId }) => ({
+        url: `/bid/reject/${collectionId}/${bidId}`,
+        method: "POST",
+        credentials: "include",
+      }),
     }),
   }),
 });
 
 export const {
   useGetBidByCollectionQuery,
-  useCreateBidQuery,
-  useUpdateBidQuery,
-  useDeleteBidQuery,
-  useAcceptBidQuery,
-  useRejectBidQuery,
+  useCreateBidMutation,
+  useUpdateBidMutation,
+  useDeleteBidMutation,
+  useAcceptBidMutation,
+  useRejectBidMutation,
 } = bidActionsApi;

@@ -4,6 +4,7 @@ import { Bid, CreateBid, UpdateBid } from "@/interfaces/bid.interface";
 import {
   Collection,
   CreateCollection,
+  PaginatedCollections,
   UpdateCollection,
 } from "@/interfaces/collection.interface";
 
@@ -13,15 +14,15 @@ export const collectionActionsApi = createApi({
   tagTypes: ["collection"],
   refetchOnFocus: true,
   endpoints: (builder) => ({
-    getAllCollections: builder.query<Collection[], {}>({
-      query(params) {
-        return {
-          url: `/collection`,
-          credentials: "include",
-          keepUnusedDataFor: 2,
-        };
-      },
+    getAllCollections: builder.query<PaginatedCollections, { page: number }>({
+      query: ({ page = 1 }) => ({
+        url: `/collection`,
+        params: { page },
+        credentials: "include",
+        keepUnusedDataFor: 2,
+      }),
     }),
+
     createCollection: builder.mutation<Collection, CreateCollection>({
       query: (dto) => ({
         url: `/collection`,
@@ -30,29 +31,24 @@ export const collectionActionsApi = createApi({
         credentials: "include",
       }),
     }),
-    updateCollection: builder.query<
+
+    updateCollection: builder.mutation<
       Collection,
-      { collectionId: number; dto: UpdateCollection }
+      { collectionId: number; dto: CreateCollection }
     >({
-      query(params) {
-        return {
-          url: `/collection/${params.collectionId}`,
-          credentials: "include",
-          keepUnusedDataFor: 2,
-          method: "PATCH",
-          body: params.dto,
-        };
-      },
+      query: ({ collectionId, dto }) => ({
+        url: `/collection/${collectionId}`,
+        method: "PATCH",
+        body: dto,
+        credentials: "include",
+      }),
     }),
-    deleteCollection: builder.query<void, { collectionId: number }>({
-      query(params) {
-        return {
-          url: `/collection/${params.collectionId}`,
-          credentials: "include",
-          keepUnusedDataFor: 2,
-          method: "DELETE",
-        };
-      },
+    deleteCollection: builder.mutation<void, { collectionId: number }>({
+      query: ({ collectionId }) => ({
+        url: `/collection/${collectionId}`,
+        method: "DELETE",
+        credentials: "include",
+      }),
     }),
     getCollectionById: builder.query<Collection, { collectionId: number }>({
       query(params) {
@@ -69,7 +65,7 @@ export const collectionActionsApi = createApi({
 export const {
   useGetAllCollectionsQuery,
   useCreateCollectionMutation,
-  useUpdateCollectionQuery,
-  useDeleteCollectionQuery,
+  useUpdateCollectionMutation,
+  useDeleteCollectionMutation,
   useGetCollectionByIdQuery,
 } = collectionActionsApi;
