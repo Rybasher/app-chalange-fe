@@ -2,6 +2,14 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
+**.env.sample**
+
+```
+# API URL
+# Replace 'https://example.com/api' with the actual URL of your API
+NEXT_PUBLIC_API_URL = https://example.com/api
+```
+
 First, run the development server:
 
 ```bash
@@ -12,6 +20,11 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
+
+## Running with Docker
+```bash
+docker-compose up --build
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
