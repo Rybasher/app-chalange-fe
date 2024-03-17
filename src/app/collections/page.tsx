@@ -303,7 +303,7 @@ export default isAuth(function Collections() {
           />
         </div>
       </Modal>
-      <div>
+      <div className="flex justify-between items-center">
         <button
           className="bg-blue-500 text-white rounded-md p-2 mr-2"
           onClick={() => setCurrentPage(currentPage - 1)}
@@ -311,7 +311,7 @@ export default isAuth(function Collections() {
         >
           Prev
         </button>
-        <p>{currentPage}</p>
+        <p className="mr-2">{currentPage}</p>
         <button
           className="bg-blue-500 text-white rounded-md p-2 mr-2"
           onClick={() => setCurrentPage(currentPage + 1)}
