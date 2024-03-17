@@ -35,7 +35,6 @@ export default isAuth(function Collections() {
     isLoading: isCollectionsLoading,
     refetch: refetchCollections,
   } = useGetAllCollectionsQuery({ page: currentPage });
-
   const [
     createCollection,
     { isLoading: isCreateCollectionLoading, data, error },
@@ -58,24 +57,29 @@ export default isAuth(function Collections() {
   const [collectionId, setCollectionId] = useState<number | null>(null);
 
   const handleBidSubmit = async (formData: { price: number }) => {
-    let result;
-    if (isBidCreate && collectionId) {
-      result = await createBid({
-        collectionId,
-        dto: { price: +formData.price },
-      }).unwrap();
-    } else if (bidId) {
-      result = await updateBid({
-        bidId,
-        dto: { price: +formData.price },
-      }).unwrap();
-    }
-    if (result) {
+    try {
+      let result;
+      if (isBidCreate && collectionId) {
+        result = await createBid({
+          collectionId,
+          dto: { price: +formData.price },
+        }).unwrap();
+      } else if (bidId) {
+        result = await updateBid({
+          bidId,
+          dto: { price: +formData.price },
+        }).unwrap();
+      }
+      if (result) {
+        setIsBidModalOpen(false);
+        toast.success(
+          `You successfully ${isBidCreate ? "created" : "updated"} bid`
+        );
+        refetchCollections();
+      }
+    } catch (error: any) {
       setIsBidModalOpen(false);
-      toast.success(
-        `You successfully ${isBidCreate ? "created" : "updated"} bid`
-      );
-      refetchCollections();
+      toast.error(error.data.detail.message);
     }
   };
 
