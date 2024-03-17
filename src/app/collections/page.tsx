@@ -1,6 +1,11 @@
 "use client";
+import { useState } from "react";
 import isAuth from "@/components/isAuth";
-import { useEffect, useState } from "react";
+import Modal from "@/components/modalWindows/modal";
+import { toast } from "react-toastify";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
+import CreateCollectionForm from "@components/forms/collectionCreateForm";
+import CreateBidForm from "@/components/forms/bidCreateForm";
 import {
   useGetAllCollectionsQuery,
   useCreateCollectionMutation,
@@ -14,11 +19,6 @@ import {
   useAcceptBidMutation,
   useRejectBidMutation,
 } from "@/api/bidApi";
-import { useTypedSelector } from "@/hooks/useTypedSelector";
-import Modal from "@/components/modalWindows/modal";
-import CreateCollectionForm from "@components/forms/collectionCreateForm";
-import { toast } from "react-toastify";
-import CreateBidForm from "@/components/forms/bidCreateForm";
 
 const backgroundBid: any = {
   pending: "bg-yellow-200",
@@ -26,35 +26,107 @@ const backgroundBid: any = {
   rejected: "bg-red-200",
 };
 
-export default isAuth(function Collections() {
-  const [currentPage, setCurrentPage] = useState(1); // Состояние для текущей страницы
+type HandleCollectionOperationArgs = {
+  isCreate: boolean;
 
+  collectionId?: string;
+
+  formData: {
+    name: string;
+
+    descriptions: string;
+
+    stocks: number;
+
+    price: number;
+  };
+};
+
+export default isAuth(function Collections() {
+  const [currentPage, setCurrentPage] = useState(1);
+  // collections
   const {
     data: collections,
     error: collectionsError,
     isLoading: isCollectionsLoading,
     refetch: refetchCollections,
   } = useGetAllCollectionsQuery({ page: currentPage });
-  const [
-    createCollection,
-    { isLoading: isCreateCollectionLoading, data, error },
-  ] = useCreateCollectionMutation();
-  const [updateCollection] = useUpdateCollectionMutation();
+  const [createCollection, { error: createCollectionError }] =
+    useCreateCollectionMutation();
+  const [updateCollection, { error: updateCollectionError }] =
+    useUpdateCollectionMutation();
   const [deleteCollection] = useDeleteCollectionMutation();
-
-  const [createBid] = useCreateBidMutation();
-  const [updateBid] = useUpdateBidMutation();
+  // bids
+  const [createBid, { error: createBidError }] = useCreateBidMutation();
+  const [updateBid, { error: updateBidError }] = useUpdateBidMutation();
   const [deleteBid] = useDeleteBidMutation();
   const [acceptBid] = useAcceptBidMutation();
   const [rejectBid] = useRejectBidMutation();
 
   const { user } = useTypedSelector((state) => state.authState);
+
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
   const [isBidCreate, setIsBidCreate] = useState(false);
   const [bidId, setBidId] = useState<number | null>(null); // [1
   const [collectionId, setCollectionId] = useState<number | null>(null);
+
+  if (isCollectionsLoading) return <div>Loading...</div>;
+  if (collectionsError) return <div>Error occurred</div>;
+  if (!collections?.data.length) return <div>No collections</div>;
+
+  const handleCollectionOperation = async (
+    isCreate: boolean,
+    collectionId: number | null,
+    formData: any
+  ) => {
+    if (isCreate) {
+      return await createCollection(formData).unwrap();
+    }
+
+    if (!isCreate && collectionId) {
+      return await updateCollection({
+        collectionId,
+        dto: {
+          name: formData.name,
+          descriptions: formData.descriptions,
+          stocks: formData.stocks,
+          price: formData.price,
+        },
+      }).unwrap();
+    }
+
+    throw new Error(
+      "Invalid operation. Either create or update operation should be specified."
+    );
+  };
+
+  const handleCollectionSubmit = async (formData: {
+    name: string;
+    descriptions: string;
+    stocks: number;
+    price: number;
+  }) => {
+    formData.price = +formData.price;
+    formData.stocks = +formData.stocks;
+    const result = await handleCollectionOperation(
+      isCreate,
+      collectionId,
+      formData
+    );
+    if (result) {
+      setIsCollectionModalOpen(false);
+      toast.success(
+        `You successfully ${isCreate ? "created" : "updated"} collection`
+      );
+      refetchCollections();
+    }
+    if (createCollectionError || updateCollectionError) {
+      setIsCollectionModalOpen(false);
+      toast.error("Something went wrong");
+    }
+  };
 
   const handleBidSubmit = async (formData: { price: number }) => {
     try {
@@ -82,45 +154,6 @@ export default isAuth(function Collections() {
       toast.error(error.data.detail.message);
     }
   };
-
-  const handleCollectionSubmit = async (formData: {
-    name: string;
-    descriptions: string;
-    stocks: number;
-    price: number;
-  }) => {
-    formData.price = +formData.price;
-    formData.stocks = +formData.stocks;
-    let result;
-    if (isCreate) {
-      result = await createCollection(formData).unwrap();
-    } else if (collectionId) {
-      result = await updateCollection({
-        collectionId,
-        dto: {
-          name: formData.name,
-          descriptions: formData.descriptions,
-          stocks: formData.stocks,
-          price: formData.price,
-        },
-      }).unwrap();
-    }
-    if (result) {
-      setIsCollectionModalOpen(false);
-      toast.success(
-        `You successfully ${isCreate ? "created" : "updated"} collection`
-      );
-      refetchCollections();
-    }
-    if (error) {
-      setIsCollectionModalOpen(false);
-      toast.error("Something went wrong");
-    }
-  };
-
-  if (isCollectionsLoading) return <div>Loading...</div>;
-  if (collectionsError) return <div>Error occurred</div>;
-  if (!collections?.data.length) return <div>No collections</div>;
 
   const handleClickCreate = () => {
     setIsCreate(true);
